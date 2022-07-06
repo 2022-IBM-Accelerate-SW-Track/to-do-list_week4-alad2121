@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Button, TextField } from "@mui/material";
 import { DesktopDatePicker , LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import Axios from "axios";
+
 
 class AddTodo extends Component {
   // Create a local react state of the this component with both content date property set to nothing.
@@ -21,6 +23,7 @@ class AddTodo extends Component {
       content: event.target.value,
       date: Date().toLocaleString('en-US')
     });
+    console.log(this.state.duedate)
   };
 
   handleDateChange = (event) => {
@@ -31,6 +34,7 @@ class AddTodo extends Component {
     this.setState({
       duedate: date
     });
+    console.log(this.state.duedate)
   };
   // The handleSubmit function collects the forms input and puts it into the react state.
   // event.preventDefault() is called to prevents default event behavior like refreshing the browser.
@@ -39,6 +43,26 @@ class AddTodo extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     if (this.state.content.trim()) {
+      const jsonObject = {
+        id: this.state.id,
+        task: this.state.content,
+        currentDate: this.state.date,
+        dueDate: this.state.duedate
+      }
+
+      console.log(jsonObject.dueDate)
+
+      Axios({
+        method: "POST",
+        url: "http://localhost:8080/add/item",
+        data: {jsonObject},
+        headers: {
+          "Content-Yype": "application/json"
+        }
+      }).then((res) => {
+        console.log(res.data.message);
+      })
+
       this.props.addTodo(this.state);
       this.setState({
         content: "",
